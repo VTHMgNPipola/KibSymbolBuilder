@@ -14,6 +14,9 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="temurin-21" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
+  <component name="PropertiesSeparatorManager">
+    <file url="file://$PROJECT_DIR$/src/main/resources/com/vthmgnpipola/kibsymbolbuilder/KibSymbolBuilder" separator="\u002e" />
+  </component>
   <component name="accountSettings">
     <option name="activeProfile" value="profile:default" />
     <option name="activeRegion" value="sa-east-1" />
