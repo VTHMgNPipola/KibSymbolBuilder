@@ -18,6 +18,9 @@
 
 package com.vthmgnpipola.kibsymbolbuilder;
 
+import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadLibrary;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadSymbol;
+import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -25,11 +28,29 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class KibSymbolBuilder extends Application {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        // Example S-Expression
+        KiCadLibrary library = new KiCadLibrary();
+        KiCadSymbol symbol = new KiCadSymbol("74HC04");
+        symbol.setValue("74HC04");
+        symbol.setDatasheet("http://www.ti.com/lit/gpn/sn74HC04");
+        symbol.setReference("U");
+        symbol.setDescription("Hex Inverter");
+        symbol.setKeywords("TTL not inv");
+        symbol.setFootprintFilters("DIP*W7.62mm* SSOP?14* TSSOP?14*");
+        library.getChildren().add(symbol);
+
+        SEWriter writer = new SEWriter();
+        library.write(writer);
+        writer.finish(Paths.get("./exemplo.txt"));
+        // End example
+
         launch(args);
     }
 
