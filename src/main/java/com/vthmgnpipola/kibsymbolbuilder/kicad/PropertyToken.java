@@ -21,8 +21,17 @@ package com.vthmgnpipola.kibsymbolbuilder.kicad;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
 public class PropertyToken extends SEToken<String> {
+    private XYAngleToken position;
+    private TextEffectsToken textEffects;
+
     public PropertyToken(String name) {
         this(name, "");
+
+        position = new XYAngleToken();
+        getChildren().add(position);
+
+        textEffects = new TextEffectsToken();
+        getChildren().add(textEffects);
     }
 
     public PropertyToken(String propertyName, String propertyValue) {
@@ -52,5 +61,13 @@ public class PropertyToken extends SEToken<String> {
         getProperties().clear();
         getProperties().add("");
         getProperties().add("");
+    }
+
+    public XYAngleToken getPosition() {
+        return position;
+    }
+
+    public TextEffectsToken getTextEffects() {
+        return textEffects;
     }
 }

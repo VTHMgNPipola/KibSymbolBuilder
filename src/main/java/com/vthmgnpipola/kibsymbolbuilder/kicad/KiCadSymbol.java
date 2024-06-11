@@ -51,7 +51,9 @@ public class KiCadSymbol extends SEToken<String> {
         description = new PropertyToken("Description");
 
         keywords = new PropertyToken("ki_keywords");
+        keywords.getTextEffects().setHide(true);
         footprintFilters = new PropertyToken("ki_fp_filters");
+        footprintFilters.getTextEffects().setHide(true);
 
         getChildren().add(reference);
         getChildren().add(value);

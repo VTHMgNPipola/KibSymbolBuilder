@@ -78,6 +78,22 @@ public class SEToken<T> implements Serializable {
                 }
                 case Boolean b -> joiner.add(b ? "yes" : "no");
                 case String s -> joiner.add("\"" + s + "\"");
+                case Float f -> {
+                    int intValue = f.intValue();
+                    if (intValue == f) {
+                        joiner.add(String.valueOf(intValue));
+                    } else {
+                        joiner.add(f.toString());
+                    }
+                }
+                case Double d -> {
+                    int intValue = d.intValue();
+                    if (intValue == d) {
+                        joiner.add(String.valueOf(intValue));
+                    } else {
+                        joiner.add(d.toString());
+                    }
+                }
                 default -> joiner.add(p.toString());
             }
         });

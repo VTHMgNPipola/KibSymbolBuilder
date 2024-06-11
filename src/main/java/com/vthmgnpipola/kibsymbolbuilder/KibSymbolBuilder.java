@@ -20,6 +20,7 @@ package com.vthmgnpipola.kibsymbolbuilder;
 
 import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadLibrary;
 import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadSymbol;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.TextEffectsToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -39,8 +40,11 @@ public class KibSymbolBuilder extends Application {
         KiCadLibrary library = new KiCadLibrary();
         KiCadSymbol symbol = new KiCadSymbol("74HC04");
         symbol.setValue("74HC04");
+        symbol.getValue().getTextEffects().setJustification(TextEffectsToken.Justification.TOP_LEFT);
         symbol.setDatasheet("http://www.ti.com/lit/gpn/sn74HC04");
+        symbol.getDatasheet().getTextEffects().setJustification(TextEffectsToken.Justification.BOTTOM_CENTER);
         symbol.setReference("U");
+        symbol.getReference().getTextEffects().setJustification(TextEffectsToken.Justification.CENTER_RIGHT);
         symbol.setDescription("Hex Inverter");
         symbol.setKeywords("TTL not inv");
         symbol.setFootprintFilters("DIP*W7.62mm* SSOP?14* TSSOP?14*");
