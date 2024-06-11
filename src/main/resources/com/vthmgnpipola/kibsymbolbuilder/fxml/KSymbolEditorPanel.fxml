@@ -66,31 +66,31 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </padding>
                                  <children>
-                                    <TextField promptText="%symbolEditor.generalSettings.symbolName.prompt" GridPane.columnIndex="1" />
+                                    <TextField fx:id="symbolName" promptText="%symbolEditor.generalSettings.symbolName.prompt" GridPane.columnIndex="1" />
                                     <Label text="%symbolEditor.generalSettings.symbolName" />
                                     <Label text="%symbolEditor.generalSettings.symbolValue" GridPane.columnIndex="2">
                                        <GridPane.margin>
                                           <Insets />
                                        </GridPane.margin>
                                     </Label>
-                                    <TextField promptText="%symbolEditor.generalSettings.symbolValue.prompt" GridPane.columnIndex="3" />
+                                    <TextField fx:id="symbolValue" promptText="%symbolEditor.generalSettings.symbolValue.prompt" GridPane.columnIndex="3" />
                                     <Label text="%symbolEditor.generalSettings.symbolDescription" GridPane.rowIndex="3" />
-                                    <TextField promptText="%symbolEditor.generalSettings.symbolDescription.prompt" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+                                    <TextField fx:id="symbolDescription" promptText="%symbolEditor.generalSettings.symbolDescription.prompt" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
                                     <Label text="%symbolEditor.generalSettings.referenceDesignator" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                    <TextField promptText="%symbolEditor.generalSettings.referenceDesignator.prompt" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                                    <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <TextField promptText="%symbolEditor.generalSettings.datasheet.prompt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="symbolReference" promptText="%symbolEditor.generalSettings.referenceDesignator.prompt" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                                    <TextField fx:id="symbolDefaultFootprint" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="symbolDatasheet" promptText="%symbolEditor.generalSettings.datasheet.prompt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <Label text="%symbolEditor.generalSettings.datasheet" GridPane.rowIndex="1" />
                                     <Label text="%symbolEditor.generalSettings.defaultFootprint" GridPane.rowIndex="2" />
-                                    <CheckBox mnemonicParsing="false" selected="true" text="%symbolEditor.generalSettings.inBom" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="4" />
-                                    <CheckBox mnemonicParsing="false" selected="true" text="%symbolEditor.generalSettings.onBoard" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="5" />
-                                    <CheckBox mnemonicParsing="false" text="%symbolEditor.generalSettings.excludeFromSimulation" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="6" />
+                                    <CheckBox fx:id="symbolInBom" mnemonicParsing="false" selected="true" text="%symbolEditor.generalSettings.inBom" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="4" />
+                                    <CheckBox fx:id="symbolOnBoard" mnemonicParsing="false" selected="true" text="%symbolEditor.generalSettings.onBoard" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="5" />
+                                    <CheckBox fx:id="symbolExcludeFromSim" mnemonicParsing="false" text="%symbolEditor.generalSettings.excludeFromSimulation" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="6" />
                                     <Label text="%symbolEditor.generalSettings.keywords" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                        <padding>
                                           <Insets left="10.0" />
                                        </padding>
                                     </Label>
-                                    <TextField promptText="%symbolEditor.generalSettings.keywords.prompt" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                    <TextField fx:id="symbolKeywords" promptText="%symbolEditor.generalSettings.keywords.prompt" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                                     <TitledPane text="%symbolEditor.generalSettings.footprintFilters" GridPane.columnSpan="2147483647" GridPane.rowIndex="7">
                                        <content>
                                           <VBox>
@@ -126,7 +126,10 @@
     </Tab>
     <Tab text="%symbolEditor.pinManager">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Button layoutX="147.0" layoutY="94.0" mnemonicParsing="false" onAction="#saveSymbol" text="Salvar" />
+               </children></AnchorPane>
       </content>
     </Tab>
   </tabs>

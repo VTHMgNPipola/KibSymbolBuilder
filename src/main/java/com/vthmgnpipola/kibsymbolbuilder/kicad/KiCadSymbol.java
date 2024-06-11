@@ -51,8 +51,12 @@ public class KiCadSymbol extends SEToken<String> {
         description = new PropertyToken("Description");
 
         keywords = new PropertyToken("ki_keywords");
-        keywords.getTextEffects().setHide(true);
         footprintFilters = new PropertyToken("ki_fp_filters");
+
+        footprint.getTextEffects().setHide(true);
+        datasheet.getTextEffects().setHide(true);
+        description.getTextEffects().setHide(true);
+        keywords.getTextEffects().setHide(true);
         footprintFilters.getTextEffects().setHide(true);
 
         getChildren().add(reference);
@@ -70,6 +74,11 @@ public class KiCadSymbol extends SEToken<String> {
 
     public void setName(String name) {
         setProperty(0, name);
+        getChildren().forEach(token -> {
+            if (token instanceof KiCadSymbolUnit unit) {
+                unit.setSymbolName(name);
+            }
+        });
     }
 
     public boolean getExcludeFromSimulation() {
