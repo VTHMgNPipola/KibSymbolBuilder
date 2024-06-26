@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.kicad;
 
+import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
 public class XYAngleToken extends SEToken<Double> {
@@ -27,6 +28,15 @@ public class XYAngleToken extends SEToken<Double> {
         setProperty(0, 0d);
         setProperty(1, 0d);
         setProperty(2, 0d);
+    }
+
+    @Override
+    public void read(RawSEToken token) {
+        super.read(token);
+
+        setProperty(0, Double.parseDouble(token.getValues().getFirst()));
+        setProperty(1, Double.parseDouble(token.getValues().get(1)));
+        setProperty(2, Double.parseDouble(token.getValues().get(2)));
     }
 
     public double getX() {

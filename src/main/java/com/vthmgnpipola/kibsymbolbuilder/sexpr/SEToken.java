@@ -112,4 +112,19 @@ public class SEToken<T> implements Serializable {
             writer.appendLine(joiner + ")");
         }
     }
+
+    /**
+     * Parses a {@link RawSEToken} to this formed token.
+     * <p>
+     * The {@code SEToken} by itself cannot process the S-Expression's properties, because it is generic. Any
+     * extending classes must override this method to handle properties and children, also handling any
+     * {@code SEToken}'s properties.
+     *
+     */
+    public void read(RawSEToken token) {
+        if (!name.equals(token.getName())) {
+            throw new IllegalArgumentException("Invalid token name: '" + token.getName()
+                    + "' when '" + name + "' was required.");
+        }
+    }
 }

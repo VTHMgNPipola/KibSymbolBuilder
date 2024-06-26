@@ -20,6 +20,7 @@ package com.vthmgnpipola.kibsymbolbuilder.controller;
 
 import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadSymbol;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
@@ -61,13 +62,13 @@ public class KSymbolEditorPanelController {
 
         footprintFilterListView.setEditable(true);
         footprintFilterListView.setCellFactory(TextFieldListCell.forListView());
-        footprintFilterListView.itemsProperty().addListener((observable, ov, nv) -> { // FIXME
+        footprintFilterListView.getItems().addListener((ListChangeListener<String>) change -> {
             StringJoiner joiner = new StringJoiner(" ");
-            nv.forEach(joiner::add);
+            footprintFilterListView.getItems().forEach(joiner::add);
             symbol.setFootprintFilters(joiner.toString());
         });
 
-        symbolName.textProperty().addListener((observable, ov, nv) -> symbol.setName(nv));
+        symbolName.textProperty().addListener((observable, ov, nv) -> symbol.setSymbolName(nv));
         symbolValue.textProperty().addListener((observable, ov, nv) -> symbol.setValue(nv));
         symbolDatasheet.textProperty().addListener((observable, ov, nv) -> symbol.setDatasheet(nv));
         symbolReference.textProperty().addListener((observable, ov, nv) -> symbol.setReference(nv));

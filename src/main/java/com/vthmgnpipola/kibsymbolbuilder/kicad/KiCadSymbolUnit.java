@@ -21,11 +21,21 @@ package com.vthmgnpipola.kibsymbolbuilder.kicad;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class KiCadSymbolUnit extends SEToken<String> {
     private final SEToken<String> unitName;
 
     private String symbolName;
     private int unitId;
+
+    private int width;
+
+    private int blockPaddingSize;
+    private boolean enableBlocks;
+    private final List<PinBlock> pinBlocks;
 
     public KiCadSymbolUnit(String symbolName, int unitId) {
         super("symbol");
@@ -35,6 +45,10 @@ public class KiCadSymbolUnit extends SEToken<String> {
         setProperty(0, symbolName + "_" + unitId + "_0");
 
         unitName = addChild("unit_name");
+
+        blockPaddingSize = 3;
+        enableBlocks = false;
+        pinBlocks = new ArrayList<>();
     }
 
     public String getSymbolName() {
@@ -63,14 +77,42 @@ public class KiCadSymbolUnit extends SEToken<String> {
         this.unitName.setProperty(0, unitName);
     }
 
+    public int getBlockPaddingSize() {
+        return blockPaddingSize;
+    }
+
+    public void setBlockPaddingSize(int blockPaddingSize) {
+        this.blockPaddingSize = blockPaddingSize;
+    }
+
+    public boolean isEnableBlocks() {
+        return enableBlocks;
+    }
+
+    public void setEnableBlocks(boolean enableBlocks) {
+        this.enableBlocks = enableBlocks;
+    }
+
+    public List<PinBlock> getPinBlocks() {
+        return pinBlocks;
+    }
+
     @Override
     public void write(SEWriter writer) {
         if (!unitName.getProperties().isEmpty() && !unitName.getProperties().getFirst().isBlank()) {
             getChildren().add(unitName);
         }
 
+        if (!enableBlocks) {
+            AtomicInteger totalPins = new AtomicInteger(0);
+            pinBlocks.forEach(block -> totalPins.addAndGet(block.getPins().size()));
+
+            int pinsPerSide = totalPins.get() / 2;
+        }
+
         super.write(writer);
 
         getChildren().remove(unitName);
+        pinBlocks.forEach(block -> getChildren().removeAll(block.getPins()));
     }
 }

@@ -21,6 +21,7 @@ package com.vthmgnpipola.kibsymbolbuilder;
 import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadLibrary;
 import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadSymbol;
 import com.vthmgnpipola.kibsymbolbuilder.kicad.TextEffectsToken;
+import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEReader;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -53,6 +54,16 @@ public class KibSymbolBuilder extends Application {
         SEWriter writer = new SEWriter();
         library.write(writer);
         writer.finish(Paths.get("./exemplo.txt"));
+
+        // Read file
+        KiCadLibrary readLibrary = new KiCadLibrary();
+
+        SEReader reader = new SEReader();
+
+        readLibrary.read(reader.read(Paths.get("./exemplo.txt")));
+        readLibrary.write(writer);
+        writer.finish(Paths.get("./exemplo2.txt"));
+
         // End example
 
         launch(args);

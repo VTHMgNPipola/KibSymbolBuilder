@@ -18,11 +18,19 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.kicad;
 
+import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 
-public class TextEffectsToken extends SEToken<Object> {
-    private final SEToken<Object> font;
+import java.util.StringJoiner;
+
+public class TextEffectsToken extends SEToken<Void> {
+    public static final String HIDE_TAG = "hide";
+    public static final String JUSTIFY_TAG = "justify";
+    public static final String FONT_TAG = "font";
+    public static final String FONT_SIZE_TAG = "size";
+
+    private final SEToken<Void> font;
     private final SEToken<Double> fontSize;
     private final SEToken<Justification> justification;
     private final SEToken<Boolean> hide;
@@ -30,15 +38,42 @@ public class TextEffectsToken extends SEToken<Object> {
     public TextEffectsToken() {
         super("effects");
 
-        fontSize = new SEToken<>("size");
+        fontSize = new SEToken<>(FONT_SIZE_TAG);
         fontSize.setProperty(0, 1.27d);
         fontSize.setProperty(1, 1.27d);
 
-        font = addChild("font");
+        font = addChild(FONT_TAG);
         font.getChildren().add(fontSize);
 
-        justification = new SEToken<>("justify");
-        hide = new SEToken<>("hide");
+        justification = new SEToken<>(JUSTIFY_TAG);
+        hide = new SEToken<>(HIDE_TAG);
+    }
+
+    @Override
+    public void read(RawSEToken token) {
+        super.read(token);
+
+        for (RawSEToken child : token.getChildren()) {
+            switch (child.getName()) {
+                case HIDE_TAG -> hide.setProperty(0, Boolean.parseBoolean(child.getValues().getFirst()));
+                case FONT_TAG -> {
+                    for (RawSEToken fontChild : child.getChildren()) {
+                        switch (fontChild.getName()) {
+                            case JUSTIFY_TAG -> {
+                                StringJoiner joiner = new StringJoiner(" ");
+                                fontChild.getValues().forEach(joiner::add);
+                                justification.setProperty(0, Justification.convert(joiner.toString()));
+                            }
+                            case FONT_SIZE_TAG -> {
+                                double height = Double.parseDouble(fontChild.getValues().getFirst());
+                                double width = Double.parseDouble(fontChild.getValues().get(1));
+                                setFontSize(height, width);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void setFontSize(double height, double width) {
@@ -74,6 +109,28 @@ public class TextEffectsToken extends SEToken<Object> {
         TOP_LEFT, TOP_CENTER, TOP_RIGHT,
         CENTER_LEFT, CENTER_CENTER, CENTER_RIGHT,
         BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT;
+
+        public static Justification convert(String string) {
+            String horizontal;
+            if (string.contains("left")) {
+                horizontal = "LEFT";
+            } else if (string.contains("right")) {
+                horizontal = "RIGHT";
+            } else {
+                horizontal = "CENTER";
+            }
+
+            String vertical;
+            if (string.contains("top")) {
+                vertical = "TOP";
+            } else if (string.contains("bottom")) {
+                vertical = "BOTTOM";
+            } else {
+                vertical = "CENTER";
+            }
+
+            return valueOf(vertical + "_" + horizontal);
+        }
 
         @Override
         public String toString() {

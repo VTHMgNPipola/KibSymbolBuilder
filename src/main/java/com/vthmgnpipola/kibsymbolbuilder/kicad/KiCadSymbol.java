@@ -18,9 +18,21 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.kicad;
 
+import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
 public class KiCadSymbol extends SEToken<String> {
+    public static final String EXCLUDE_FROM_SIM_TAG = "exclude_from_sim";
+    public static final String IN_BOM_TAG = "in_bom";
+    public static final String ON_BOARD_TAG = "on_board";
+    private static final String REFERENCE_TAG = "Reference";
+    public static final String VALUE_TAG = "Value";
+    public static final String FOOTPRINT_TAG = "Footprint";
+    public static final String DATASHEET_TAG = "Datasheet";
+    public static final String DESCRIPTION_TAG = "Description";
+    public static final String KEYWORDS_TAG = "ki_keywords";
+    public static final String FOOTPRINT_FILTERS_TAG = "ki_fp_filters";
+
     private final SEToken<Boolean> excludeFromSimulation;
     private final SEToken<Boolean> includeInBom;
     private final SEToken<Boolean> includeOnBoard;
@@ -36,22 +48,22 @@ public class KiCadSymbol extends SEToken<String> {
     private final PropertyToken keywords;
     private final PropertyToken footprintFilters;
 
-    public KiCadSymbol(String name) {
+    public KiCadSymbol(String symbolName) {
         super("symbol");
-        setProperty(0, name);
+        setProperty(0, symbolName);
 
-        excludeFromSimulation = addChild("exclude_from_sim", false);
-        includeInBom = addChild("in_bom", true);
-        includeOnBoard = addChild("on_board", true);
+        excludeFromSimulation = addChild(EXCLUDE_FROM_SIM_TAG, false);
+        includeInBom = addChild(IN_BOM_TAG, true);
+        includeOnBoard = addChild(ON_BOARD_TAG, true);
 
-        reference = new PropertyToken("Reference");
-        value = new PropertyToken("Value");
-        footprint = new PropertyToken("Footprint");
-        datasheet = new PropertyToken("Datasheet");
-        description = new PropertyToken("Description");
+        reference = new PropertyToken(REFERENCE_TAG);
+        value = new PropertyToken(VALUE_TAG);
+        footprint = new PropertyToken(FOOTPRINT_TAG);
+        datasheet = new PropertyToken(DATASHEET_TAG);
+        description = new PropertyToken(DESCRIPTION_TAG);
 
-        keywords = new PropertyToken("ki_keywords");
-        footprintFilters = new PropertyToken("ki_fp_filters");
+        keywords = new PropertyToken(KEYWORDS_TAG);
+        footprintFilters = new PropertyToken(FOOTPRINT_FILTERS_TAG);
 
         footprint.getTextEffects().setHide(true);
         datasheet.getTextEffects().setHide(true);
@@ -68,11 +80,41 @@ public class KiCadSymbol extends SEToken<String> {
         getChildren().add(footprintFilters);
     }
 
-    public String getName() {
+    @Override
+    public void read(RawSEToken token) {
+        super.read(token);
+
+        setSymbolName(token.getValues().getFirst());
+
+        for (RawSEToken child : token.getChildren()) {
+            switch (child.getName()) {
+                case EXCLUDE_FROM_SIM_TAG -> excludeFromSimulation
+                        .setProperty(0, Boolean.parseBoolean(child.getValues().getFirst()));
+                case IN_BOM_TAG -> includeInBom
+                        .setProperty(0, Boolean.parseBoolean(child.getValues().getFirst()));
+                case ON_BOARD_TAG -> includeOnBoard
+                        .setProperty(0, Boolean.parseBoolean(child.getValues().getFirst()));
+                case PropertyToken.TOKEN_NAME -> {
+                    String propertyName = child.getValues().getFirst();
+                    switch (propertyName) {
+                        case REFERENCE_TAG -> reference.read(child);
+                        case VALUE_TAG -> value.read(child);
+                        case FOOTPRINT_TAG -> footprint.read(child);
+                        case DATASHEET_TAG -> datasheet.read(child);
+                        case DESCRIPTION_TAG -> description.read(child);
+                        case KEYWORDS_TAG -> keywords.read(child);
+                        case FOOTPRINT_FILTERS_TAG -> footprintFilters.read(child);
+                    }
+                }
+            }
+        }
+    }
+
+    public String getSymbolName() {
         return getProperties().getFirst();
     }
 
-    public void setName(String name) {
+    public void setSymbolName(String name) {
         setProperty(0, name);
         getChildren().forEach(token -> {
             if (token instanceof KiCadSymbolUnit unit) {

@@ -41,6 +41,22 @@ public class KiCadSymbolPin extends SEToken<Object> {
         this.pinNumber = new NamedTextToken("number", pinNumber);
     }
 
+    public ElectricalType getElectricalType() {
+        return (ElectricalType) getProperties().getFirst();
+    }
+
+    public void setElectricalType(ElectricalType electricalType) {
+        setProperty(0, electricalType);
+    }
+
+    public GraphicStyle getGraphicStyle() {
+        return (GraphicStyle) getProperties().get(1);
+    }
+
+    public void setGraphicStyle(GraphicStyle graphicStyle) {
+        setProperty(1, graphicStyle);
+    }
+
     public XYAngleToken getPosition() {
         return position;
     }

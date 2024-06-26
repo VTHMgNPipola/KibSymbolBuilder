@@ -18,9 +18,12 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.kicad;
 
+import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
 public class PropertyToken extends SEToken<String> {
+    public static final String TOKEN_NAME = "property";
+
     private XYAngleToken position;
     private TextEffectsToken textEffects;
 
@@ -35,7 +38,7 @@ public class PropertyToken extends SEToken<String> {
     }
 
     public PropertyToken(String propertyName, String propertyValue) {
-        super("property");
+        super(TOKEN_NAME);
 
         getProperties().add(propertyName);
         getProperties().add(propertyValue);
@@ -69,5 +72,26 @@ public class PropertyToken extends SEToken<String> {
 
     public TextEffectsToken getTextEffects() {
         return textEffects;
+    }
+
+    @Override
+    public void read(RawSEToken token) {
+        super.read(token);
+
+        if (!token.getValues().getFirst().equals(getPropertyName())) {
+            throw new IllegalArgumentException("Invalid property name: '" + token.getValues().getFirst()
+                    + "' when '" + getPropertyName() + "' was required.");
+        }
+
+        setPropertyValue(token.getValues().get(1));
+
+        for (RawSEToken child : token.getChildren()) {
+            String currentTokenName = child.getName();
+            if (position.getName().equals(currentTokenName)) {
+                position.read(child);
+            } else if (textEffects.getName().equals(currentTokenName)) {
+                textEffects.read(child);
+            }
+        }
     }
 }

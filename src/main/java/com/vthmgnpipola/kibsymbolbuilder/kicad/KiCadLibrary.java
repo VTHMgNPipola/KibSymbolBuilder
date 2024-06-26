@@ -18,23 +18,30 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.kicad;
 
+import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 
 import java.time.LocalDate;
 
-public class KiCadLibrary extends SEToken<Object> {
+public class KiCadLibrary extends SEToken<Void> {
     public static final String GENERATOR = "kib_symbol_builder";
     public static final String GENERATOR_VERSION = "1.0-SNAPSHOT";
 
+    private static final String VERSION_TAG = "version";
+    private static final String GENERATOR_TAG = "generator";
+    private static final String GENERATOR_VERSION_TAG = "generator_version";
+
     private final SEToken<Integer> version;
+    private final SEToken<String> generator;
+    private final SEToken<String> generatorVersion;
 
     public KiCadLibrary() {
         super("kicad_symbol_lib");
 
-        version = addChild("version", 0);
-        addChild("generator", GENERATOR);
-        addChild("generator_version", GENERATOR_VERSION);
+        version = addChild(VERSION_TAG, 0);
+        generator = addChild(GENERATOR_TAG, GENERATOR);
+        generatorVersion = addChild(GENERATOR_VERSION_TAG, GENERATOR_VERSION);
     }
 
     @Override
@@ -44,5 +51,23 @@ public class KiCadLibrary extends SEToken<Object> {
         version.setProperty(0, Integer.parseInt(date));
 
         super.write(writer);
+    }
+
+    @Override
+    public void read(RawSEToken token) {
+        super.read(token);
+
+        for (RawSEToken child : token.getChildren()) {
+            switch (child.getName()) {
+                case VERSION_TAG -> version.setProperty(0, Integer.parseInt(child.getValues().getFirst()));
+                case GENERATOR_TAG -> generator.setProperty(0, child.getValues().getFirst());
+                case GENERATOR_VERSION_TAG -> generatorVersion.setProperty(0, child.getValues().getFirst());
+                default -> {
+                    KiCadSymbol symbol = new KiCadSymbol(null);
+                    symbol.read(child);
+                    getChildren().add(symbol);
+                }
+            }
+        }
     }
 }
