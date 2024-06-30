@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class KSymbolBuilderController {
@@ -80,6 +81,26 @@ public class KSymbolBuilderController {
 
         editorController.setSymbol(kiCadSymbol);
         kiCadSymbol.loadSExpression(new SEKiCadSymbol(""));
+
+        librariesTreeView.setOnMouseClicked(event -> {
+            if (event.getClickCount() >= 2 && !librariesTreeView.getSelectionModel().isEmpty()) {
+                TreeItem<String> selectedItem = librariesTreeView.getSelectionModel().getSelectedItem();
+                if (selectedItem.getChildren().isEmpty()) {
+                    TreeItem<String> selectedLibraryTreeItem = selectedItem.getParent();
+                    Optional<SEKiCadLibrary> libraryOptional = libraries.values().stream()
+                            .filter(l -> l.getLibraryName().equals(selectedLibraryTreeItem.getValue()))
+                            .findAny();
+                    assert libraryOptional.isPresent();
+
+                    Optional<SEToken<?>> symbolOptional = libraryOptional.get().getChildren().stream()
+                            .filter(c -> c instanceof SEKiCadSymbol symbol && symbol.getSymbolName().equals(selectedItem.getValue()))
+                            .findAny();
+                    assert symbolOptional.isPresent() && symbolOptional.get() instanceof SEKiCadSymbol;
+
+                    kiCadSymbol.loadSExpression((SEKiCadSymbol) symbolOptional.get());
+                }
+            }
+        });
 
         logger.info("Successfully initialized KSymbolBuilderController");
     }
