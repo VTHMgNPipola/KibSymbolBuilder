@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox minHeight="0.0" minWidth="0.0" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vthmgnpipola.kibsymbolbuilder.controller.KSymbolBuilderController">
    <children>
       <MenuBar>
@@ -17,7 +16,7 @@
           <Menu mnemonicParsing="false" text="%symbolEditor.menu.file">
             <items>
                   <MenuItem mnemonicParsing="false" text="%symbolEditor.menu.file.save" />
-                  <MenuItem mnemonicParsing="false" text="%symbolEditor.menu.file.libraries" />
+                  <MenuItem mnemonicParsing="false" onAction="#openLibraryManager" text="%symbolEditor.menu.file.libraries" />
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" text="%symbolEditor.menu.file.close" />
             </items>

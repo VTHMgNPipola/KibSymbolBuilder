@@ -62,7 +62,7 @@ public class KibSymbolBuilder extends Application {
 
         readLibrary.read(reader.read(Paths.get("./exemplo.txt")));
         readLibrary.write(writer);
-        writer.finish(Paths.get("./exemplo2.txt"));
+        writer.finish(Paths.get("./exemplo2.kicad_sym"));
 
         // End example
 

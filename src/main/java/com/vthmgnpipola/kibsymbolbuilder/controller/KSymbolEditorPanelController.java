@@ -49,7 +49,7 @@ public class KSymbolEditorPanelController {
 
     @FXML
     private void initialize() {
-        logger.info("Initializing KSymbolEditorPanelController");
+        logger.info("Initializing KSymbolEditorPanelController...");
 
         footprintFilterListView.setEditable(true);
         footprintFilterListView.setCellFactory(TextFieldListCell.forListView());

@@ -32,6 +32,8 @@ public class SEKiCadLibrary extends SEToken<Void> {
     private static final String GENERATOR_TAG = "generator";
     private static final String GENERATOR_VERSION_TAG = "generator_version";
 
+    private String libraryName;
+
     private final SEToken<Integer> version;
     private final SEToken<String> generator;
     private final SEToken<String> generatorVersion;
@@ -42,6 +44,18 @@ public class SEKiCadLibrary extends SEToken<Void> {
         version = addChild(VERSION_TAG, 0);
         generator = addChild(GENERATOR_TAG, GENERATOR);
         generatorVersion = addChild(GENERATOR_VERSION_TAG, GENERATOR_VERSION);
+    }
+
+    public String getGenerator() {
+        return generator.getProperties().getFirst();
+    }
+
+    public String getLibraryName() {
+        return libraryName;
+    }
+
+    public void setLibraryName(String libraryName) {
+        this.libraryName = libraryName;
     }
 
     @Override

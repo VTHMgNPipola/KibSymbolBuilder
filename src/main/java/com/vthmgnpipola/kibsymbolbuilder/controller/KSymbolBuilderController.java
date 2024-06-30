@@ -19,21 +19,62 @@
 package com.vthmgnpipola.kibsymbolbuilder.controller;
 
 import com.vthmgnpipola.kibsymbolbuilder.kicad.gui.MKiCadSymbol;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadLibrary;
 import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadSymbol;
+import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class KSymbolBuilderController {
     private static final Logger logger = LoggerFactory.getLogger(KSymbolBuilderController.class);
 
+    @FXML private ResourceBundle resources;
+
     @FXML private TreeView<String> librariesTreeView;
     @FXML private KSymbolEditorPanelController editorController;
 
+    private MapProperty<Path, SEKiCadLibrary> libraries;
+
     @FXML
     private void initialize() {
-        logger.info("Initializing KSymbolBuilderController");
+        logger.info("Initializing KSymbolBuilderController...");
+
+        libraries = new SimpleMapProperty<>(FXCollections.observableHashMap());
+        libraries.addListener((MapChangeListener<? super Path, ? super SEKiCadLibrary>) c -> {
+            TreeItem<String> rootItem = new TreeItem<>(resources.getString("symbolEditor.librariesTreeItem"));
+            rootItem.setExpanded(true);
+
+            for (SEKiCadLibrary library : libraries.values()) {
+                TreeItem<String> libraryTreeItem = new TreeItem<>(library.getLibraryName());
+
+                for (SEToken<?> child : library.getChildren()) {
+                    if (child instanceof SEKiCadSymbol symbol) {
+                        TreeItem<String> symbolTreeItem = new TreeItem<>(symbol.getSymbolName());
+                        libraryTreeItem.getChildren().add(symbolTreeItem);
+                    }
+                }
+                rootItem.getChildren().add(libraryTreeItem);
+            }
+
+            librariesTreeView.setRoot(rootItem);
+        });
 
         MKiCadSymbol kiCadSymbol = new MKiCadSymbol();
 
@@ -41,5 +82,27 @@ public class KSymbolBuilderController {
         kiCadSymbol.loadSExpression(new SEKiCadSymbol(""));
 
         logger.info("Successfully initialized KSymbolBuilderController");
+    }
+
+    @FXML
+    private void openLibraryManager() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setResources(resources);
+
+        loader.setLocation(Objects.requireNonNull(getClass().getClassLoader()
+                .getResource("com/vthmgnpipola/kibsymbolbuilder/fxml/KLibraryManager.fxml")));
+        try {
+            Parent libraryManagerRoot = loader.load();
+            ((KLibraryManagerController) loader.getController()).setLibraries(libraries);
+
+            Stage stage = new Stage();
+            stage.setTitle(resources.getString("libraryManager.title"));
+            stage.setScene(new Scene(libraryManagerRoot));
+            stage.show();
+        } catch (IOException e) {
+            logger.error("Unable to load library manager window!", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR, resources.getString("generic.ioException"));
+            alert.show();
+        }
     }
 }
