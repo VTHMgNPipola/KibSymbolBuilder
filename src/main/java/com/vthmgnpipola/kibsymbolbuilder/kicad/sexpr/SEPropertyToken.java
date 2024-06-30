@@ -16,32 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
-public class PropertyToken extends SEToken<String> {
+public class SEPropertyToken extends SEToken<String> {
     public static final String TOKEN_NAME = "property";
 
-    private XYAngleToken position;
-    private TextEffectsToken textEffects;
+    private final SEPositionToken position;
+    private final SETextEffectsToken textEffects;
 
-    public PropertyToken(String name) {
+    public SEPropertyToken(String name) {
         this(name, "");
-
-        position = new XYAngleToken();
-        getChildren().add(position);
-
-        textEffects = new TextEffectsToken();
-        getChildren().add(textEffects);
     }
 
-    public PropertyToken(String propertyName, String propertyValue) {
+    public SEPropertyToken(String propertyName, String propertyValue) {
         super(TOKEN_NAME);
 
         getProperties().add(propertyName);
         getProperties().add(propertyValue);
+
+        position = new SEPositionToken();
+        getChildren().add(position);
+
+        textEffects = new SETextEffectsToken();
+        getChildren().add(textEffects);
     }
 
     public void setPropertyName(String propertyName) {
@@ -66,11 +66,11 @@ public class PropertyToken extends SEToken<String> {
         getProperties().add("");
     }
 
-    public XYAngleToken getPosition() {
+    public SEPositionToken getPosition() {
         return position;
     }
 
-    public TextEffectsToken getTextEffects() {
+    public SETextEffectsToken getTextEffects() {
         return textEffects;
     }
 

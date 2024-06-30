@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
@@ -24,7 +24,7 @@ import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 
 import java.util.StringJoiner;
 
-public class TextEffectsToken extends SEToken<Void> {
+public class SETextEffectsToken extends SEToken<Void> {
     public static final String HIDE_TAG = "hide";
     public static final String JUSTIFY_TAG = "justify";
     public static final String FONT_TAG = "font";
@@ -35,7 +35,7 @@ public class TextEffectsToken extends SEToken<Void> {
     private final SEToken<Justification> justification;
     private final SEToken<Boolean> hide;
 
-    public TextEffectsToken() {
+    public SETextEffectsToken() {
         super("effects");
 
         fontSize = new SEToken<>(FONT_SIZE_TAG);

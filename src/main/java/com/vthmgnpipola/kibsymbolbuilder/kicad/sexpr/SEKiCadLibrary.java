@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
@@ -24,7 +24,7 @@ import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 
 import java.time.LocalDate;
 
-public class KiCadLibrary extends SEToken<Void> {
+public class SEKiCadLibrary extends SEToken<Void> {
     public static final String GENERATOR = "kib_symbol_builder";
     public static final String GENERATOR_VERSION = "1.0-SNAPSHOT";
 
@@ -36,7 +36,7 @@ public class KiCadLibrary extends SEToken<Void> {
     private final SEToken<String> generator;
     private final SEToken<String> generatorVersion;
 
-    public KiCadLibrary() {
+    public SEKiCadLibrary() {
         super("kicad_symbol_lib");
 
         version = addChild(VERSION_TAG, 0);
@@ -63,7 +63,7 @@ public class KiCadLibrary extends SEToken<Void> {
                 case GENERATOR_TAG -> generator.setProperty(0, child.getValues().getFirst());
                 case GENERATOR_VERSION_TAG -> generatorVersion.setProperty(0, child.getValues().getFirst());
                 default -> {
-                    KiCadSymbol symbol = new KiCadSymbol(null);
+                    SEKiCadSymbol symbol = new SEKiCadSymbol(null);
                     symbol.read(child);
                     getChildren().add(symbol);
                 }

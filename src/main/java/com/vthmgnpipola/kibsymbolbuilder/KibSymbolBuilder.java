@@ -18,9 +18,9 @@
 
 package com.vthmgnpipola.kibsymbolbuilder;
 
-import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadLibrary;
-import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadSymbol;
-import com.vthmgnpipola.kibsymbolbuilder.kicad.TextEffectsToken;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadLibrary;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadSymbol;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SETextEffectsToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEReader;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 import javafx.application.Application;
@@ -38,14 +38,14 @@ import java.util.ResourceBundle;
 public class KibSymbolBuilder extends Application {
     public static void main(String[] args) throws IOException {
         // Example S-Expression
-        KiCadLibrary library = new KiCadLibrary();
-        KiCadSymbol symbol = new KiCadSymbol("74HC04");
+        SEKiCadLibrary library = new SEKiCadLibrary();
+        SEKiCadSymbol symbol = new SEKiCadSymbol("74HC04");
         symbol.setValue("74HC04");
-        symbol.getValue().getTextEffects().setJustification(TextEffectsToken.Justification.TOP_LEFT);
+        symbol.getValue().getTextEffects().setJustification(SETextEffectsToken.Justification.TOP_LEFT);
         symbol.setDatasheet("http://www.ti.com/lit/gpn/sn74HC04");
-        symbol.getDatasheet().getTextEffects().setJustification(TextEffectsToken.Justification.BOTTOM_CENTER);
+        symbol.getDatasheet().getTextEffects().setJustification(SETextEffectsToken.Justification.BOTTOM_CENTER);
         symbol.setReference("U");
-        symbol.getReference().getTextEffects().setJustification(TextEffectsToken.Justification.CENTER_RIGHT);
+        symbol.getReference().getTextEffects().setJustification(SETextEffectsToken.Justification.CENTER_RIGHT);
         symbol.setDescription("Hex Inverter");
         symbol.setKeywords("TTL not inv");
         symbol.setFootprintFilters("DIP*W7.62mm* SSOP?14* TSSOP?14*");
@@ -56,7 +56,7 @@ public class KibSymbolBuilder extends Application {
         writer.finish(Paths.get("./exemplo.txt"));
 
         // Read file
-        KiCadLibrary readLibrary = new KiCadLibrary();
+        SEKiCadLibrary readLibrary = new SEKiCadLibrary();
 
         SEReader reader = new SEReader();
 
@@ -79,8 +79,9 @@ public class KibSymbolBuilder extends Application {
         FXMLLoader loader = new FXMLLoader();
         loader.setResources(resourceBundle);
 
-        Parent root = loader.load(Objects.requireNonNull(Objects.requireNonNull(getClass().getClassLoader()
-                .getResource("com/vthmgnpipola/kibsymbolbuilder/fxml/KSymbolEditorPanel.fxml")).openStream()));
+        loader.setLocation(Objects.requireNonNull(getClass().getClassLoader()
+                .getResource("com/vthmgnpipola/kibsymbolbuilder/fxml/KSymbolBuilder.fxml")));
+        Parent root = loader.load();
 
         stage.setTitle(resourceBundle.getString("symbolEditor.title"));
         stage.setScene(new Scene(root));

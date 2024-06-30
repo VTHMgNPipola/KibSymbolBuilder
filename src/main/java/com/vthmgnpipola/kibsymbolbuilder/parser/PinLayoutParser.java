@@ -18,7 +18,7 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.parser;
 
-import com.vthmgnpipola.kibsymbolbuilder.kicad.UnitData;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.UnitData;
 
 import java.nio.file.Path;
 import java.util.List;

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class PinBlock {
     private String blockName;
     private int index;
     private boolean placedRight;
-    private List<KiCadSymbolPin> pins;
+    private List<SEKiCadSymbolPin> pins;
 
     public PinBlock() {
         pins = new ArrayList<>();
@@ -55,11 +55,11 @@ public class PinBlock {
         this.placedRight = placedRight;
     }
 
-    public List<KiCadSymbolPin> getPins() {
+    public List<SEKiCadSymbolPin> getPins() {
         return pins;
     }
 
-    public void setPins(List<KiCadSymbolPin> pins) {
+    public void setPins(List<SEKiCadSymbolPin> pins) {
         this.pins = pins;
     }
 }

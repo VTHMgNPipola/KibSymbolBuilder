@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class UnitData {
         this.blocks = blocks;
     }
 
-    public KiCadSymbolUnit process() {
+    public SEKiCadSymbolUnit process() {
         throw new UnsupportedOperationException("This method wasn't implemented yet!");
     }
 }

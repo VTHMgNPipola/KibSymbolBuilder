@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class KiCadSymbolUnit extends SEToken<String> {
+public class SEKiCadSymbolUnit extends SEToken<String> {
     private final SEToken<String> unitName;
 
     private String symbolName;
@@ -37,7 +37,7 @@ public class KiCadSymbolUnit extends SEToken<String> {
     private boolean enableBlocks;
     private final List<PinBlock> pinBlocks;
 
-    public KiCadSymbolUnit(String symbolName, int unitId) {
+    public SEKiCadSymbolUnit(String symbolName, int unitId) {
         super("symbol");
         this.symbolName = symbolName;
         this.unitId = unitId;

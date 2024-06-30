@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
-public class KiCadSymbol extends SEToken<String> {
+public class SEKiCadSymbol extends SEToken<String> {
     public static final String EXCLUDE_FROM_SIM_TAG = "exclude_from_sim";
     public static final String IN_BOM_TAG = "in_bom";
     public static final String ON_BOARD_TAG = "on_board";
@@ -37,18 +37,18 @@ public class KiCadSymbol extends SEToken<String> {
     private final SEToken<Boolean> includeInBom;
     private final SEToken<Boolean> includeOnBoard;
 
-    private final PropertyToken reference;
-    private final PropertyToken value;
-    private final PropertyToken footprint;
-    private final PropertyToken datasheet;
-    private final PropertyToken description;
+    private final SEPropertyToken reference;
+    private final SEPropertyToken value;
+    private final SEPropertyToken footprint;
+    private final SEPropertyToken datasheet;
+    private final SEPropertyToken description;
 
     // These are "reserved" fields that "cannot be used for user defined properties", even though you can set these
     // using the symbol editor
-    private final PropertyToken keywords;
-    private final PropertyToken footprintFilters;
+    private final SEPropertyToken keywords;
+    private final SEPropertyToken footprintFilters;
 
-    public KiCadSymbol(String symbolName) {
+    public SEKiCadSymbol(String symbolName) {
         super("symbol");
         setProperty(0, symbolName);
 
@@ -56,14 +56,14 @@ public class KiCadSymbol extends SEToken<String> {
         includeInBom = addChild(IN_BOM_TAG, true);
         includeOnBoard = addChild(ON_BOARD_TAG, true);
 
-        reference = new PropertyToken(REFERENCE_TAG);
-        value = new PropertyToken(VALUE_TAG);
-        footprint = new PropertyToken(FOOTPRINT_TAG);
-        datasheet = new PropertyToken(DATASHEET_TAG);
-        description = new PropertyToken(DESCRIPTION_TAG);
+        reference = new SEPropertyToken(REFERENCE_TAG, "U");
+        value = new SEPropertyToken(VALUE_TAG);
+        footprint = new SEPropertyToken(FOOTPRINT_TAG);
+        datasheet = new SEPropertyToken(DATASHEET_TAG);
+        description = new SEPropertyToken(DESCRIPTION_TAG);
 
-        keywords = new PropertyToken(KEYWORDS_TAG);
-        footprintFilters = new PropertyToken(FOOTPRINT_FILTERS_TAG);
+        keywords = new SEPropertyToken(KEYWORDS_TAG);
+        footprintFilters = new SEPropertyToken(FOOTPRINT_FILTERS_TAG);
 
         footprint.getTextEffects().setHide(true);
         datasheet.getTextEffects().setHide(true);
@@ -94,7 +94,7 @@ public class KiCadSymbol extends SEToken<String> {
                         .setProperty(0, Boolean.parseBoolean(child.getValues().getFirst()));
                 case ON_BOARD_TAG -> includeOnBoard
                         .setProperty(0, Boolean.parseBoolean(child.getValues().getFirst()));
-                case PropertyToken.TOKEN_NAME -> {
+                case SEPropertyToken.TOKEN_NAME -> {
                     String propertyName = child.getValues().getFirst();
                     switch (propertyName) {
                         case REFERENCE_TAG -> reference.read(child);
@@ -117,13 +117,13 @@ public class KiCadSymbol extends SEToken<String> {
     public void setSymbolName(String name) {
         setProperty(0, name);
         getChildren().forEach(token -> {
-            if (token instanceof KiCadSymbolUnit unit) {
+            if (token instanceof SEKiCadSymbolUnit unit) {
                 unit.setSymbolName(name);
             }
         });
     }
 
-    public boolean getExcludeFromSimulation() {
+    public boolean isExcludeFromSimulation() {
         return excludeFromSimulation.getProperties().getFirst();
     }
 
@@ -131,7 +131,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.excludeFromSimulation.setProperty(0, excludeFromSimulation);
     }
 
-    public boolean getIncludeInBom() {
+    public boolean isIncludeInBom() {
         return includeInBom.getProperties().getFirst();
     }
 
@@ -139,7 +139,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.includeInBom.setProperty(0, includeInBom);
     }
 
-    public boolean getIncludeOnBoard() {
+    public boolean isIncludeOnBoard() {
         return includeOnBoard.getProperties().getFirst();
     }
 
@@ -147,7 +147,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.includeOnBoard.setProperty(0, includeOnBoard);
     }
 
-    public PropertyToken getReference() {
+    public SEPropertyToken getReference() {
         return reference;
     }
 
@@ -155,7 +155,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.reference.setPropertyValue(reference);
     }
 
-    public PropertyToken getValue() {
+    public SEPropertyToken getValue() {
         return value;
     }
 
@@ -163,7 +163,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.value.setPropertyValue(value);
     }
 
-    public PropertyToken getFootprint() {
+    public SEPropertyToken getFootprint() {
         return footprint;
     }
 
@@ -171,7 +171,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.footprint.setPropertyValue(footprint);
     }
 
-    public PropertyToken getDatasheet() {
+    public SEPropertyToken getDatasheet() {
         return datasheet;
     }
 
@@ -179,7 +179,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.datasheet.setPropertyValue(datasheet);
     }
 
-    public PropertyToken getDescription() {
+    public SEPropertyToken getDescription() {
         return description;
     }
 
@@ -187,7 +187,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.description.setPropertyValue(description);
     }
 
-    public PropertyToken getKeywords() {
+    public SEPropertyToken getKeywords() {
         return keywords;
     }
 
@@ -195,7 +195,7 @@ public class KiCadSymbol extends SEToken<String> {
         this.keywords.setPropertyValue(keywords);
     }
 
-    public PropertyToken getFootprintFilters() {
+    public SEPropertyToken getFootprintFilters() {
         return footprintFilters;
     }
 

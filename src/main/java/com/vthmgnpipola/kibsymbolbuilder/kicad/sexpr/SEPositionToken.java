@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.RawSEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
-public class XYAngleToken extends SEToken<Double> {
-    public XYAngleToken() {
+public class SEPositionToken extends SEToken<Double> {
+    public SEPositionToken() {
         super("at");
 
         setProperty(0, 0d);

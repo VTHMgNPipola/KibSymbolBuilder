@@ -18,9 +18,7 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.controller;
 
-import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadSymbol;
-import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
-import javafx.collections.ListChangeListener;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.gui.MKiCadSymbol;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
@@ -28,10 +26,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.StringJoiner;
 
 public class KSymbolEditorPanelController {
     private static final Logger logger = LoggerFactory.getLogger(KSymbolEditorPanelController.class);
@@ -51,38 +45,16 @@ public class KSymbolEditorPanelController {
     @FXML
     private ListView<String> footprintFilterListView;
 
-    private KiCadSymbol symbol;
-    private SEWriter seWriter;
+    private MKiCadSymbol symbol;
 
     @FXML
     private void initialize() {
-        logger.debug("Initializing KSymbolEditorPanelController");
-
-        symbol = new KiCadSymbol(""); // For testing only
+        logger.info("Initializing KSymbolEditorPanelController");
 
         footprintFilterListView.setEditable(true);
         footprintFilterListView.setCellFactory(TextFieldListCell.forListView());
-        footprintFilterListView.getItems().addListener((ListChangeListener<String>) change -> {
-            StringJoiner joiner = new StringJoiner(" ");
-            footprintFilterListView.getItems().forEach(joiner::add);
-            symbol.setFootprintFilters(joiner.toString());
-        });
 
-        symbolName.textProperty().addListener((observable, ov, nv) -> symbol.setSymbolName(nv));
-        symbolValue.textProperty().addListener((observable, ov, nv) -> symbol.setValue(nv));
-        symbolDatasheet.textProperty().addListener((observable, ov, nv) -> symbol.setDatasheet(nv));
-        symbolReference.textProperty().addListener((observable, ov, nv) -> symbol.setReference(nv));
-        symbolDefaultFootprint.textProperty().addListener((observable, ov, nv) -> symbol.setFootprint(nv));
-        symbolKeywords.textProperty().addListener((observable, ov, nv) -> symbol.setKeywords(nv));
-        symbolDescription.textProperty().addListener((observable, ov, nv) -> symbol.setDescription(nv));
-        
-        symbolInBom.selectedProperty().addListener((observable, ov, nv) -> symbol.setIncludeInBom(nv));
-        symbolOnBoard.selectedProperty().addListener((observable, ov, nv) -> symbol.setIncludeOnBoard(nv));
-        symbolExcludeFromSim.selectedProperty().addListener((observable, ov, nv) -> symbol.setExcludeFromSimulation(nv));
-
-        seWriter = new SEWriter();
-
-        logger.debug("Successfully initialized KSymbolEditorPanelController");
+        logger.info("Successfully initialized KSymbolEditorPanelController");
     }
 
     @FXML
@@ -101,18 +73,28 @@ public class KSymbolEditorPanelController {
         }
     }
 
-    @FXML
-    public void saveSymbol() throws IOException {
-        // For testing only
-        symbol.write(seWriter);
-        seWriter.finish(Paths.get("./simbolo.txt"));
-    }
-
-    public KiCadSymbol getSymbol() {
+    public MKiCadSymbol getSymbol() {
         return symbol;
     }
 
-    public void setSymbol(KiCadSymbol symbol) {
+    public void setSymbol(MKiCadSymbol symbol) {
+        logger.info("Rebinding KiCadSymbol to symbol editor panel...");
+
         this.symbol = symbol;
+
+        footprintFilterListView.itemsProperty().bindBidirectional(symbol.footprintFiltersProperty());
+
+        // Set listeners
+        symbolName.textProperty().bindBidirectional(symbol.nameProperty());
+        symbolValue.textProperty().bindBidirectional(symbol.valueProperty());
+        symbolDatasheet.textProperty().bindBidirectional(symbol.datasheetProperty());
+        symbolReference.textProperty().bindBidirectional(symbol.referenceProperty());
+        symbolDefaultFootprint.textProperty().bindBidirectional(symbol.footprintProperty());
+        symbolKeywords.textProperty().bindBidirectional(symbol.keywordsProperty());
+        symbolDescription.textProperty().bindBidirectional(symbol.descriptionProperty());
+
+        symbolInBom.selectedProperty().bindBidirectional(symbol.includeInBomProperty());
+        symbolOnBoard.selectedProperty().bindBidirectional(symbol.includeOnBoardProperty());
+        symbolExcludeFromSim.selectedProperty().bindBidirectional(symbol.excludeFromSimProperty());
     }
 }

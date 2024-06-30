@@ -16,18 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
-public class NamedTextToken extends SEToken<String> {
-    private final TextEffectsToken textEffects;
+public class SENamedTextToken extends SEToken<String> {
+    private final SETextEffectsToken textEffects;
 
-    public NamedTextToken(String name, String text) {
+    public SENamedTextToken(String name, String text) {
         super(name);
         setProperty(0, text);
 
-        textEffects = new TextEffectsToken();
+        textEffects = new SETextEffectsToken();
         getChildren().add(textEffects);
     }
 
@@ -35,7 +35,7 @@ public class NamedTextToken extends SEToken<String> {
         setProperty(0, text);
     }
 
-    public TextEffectsToken getTextEffects() {
+    public SETextEffectsToken getTextEffects() {
         return textEffects;
     }
 }

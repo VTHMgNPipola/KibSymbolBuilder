@@ -16,29 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.kibsymbolbuilder.kicad;
+package com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr;
 
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 
-public class KiCadSymbolPin extends SEToken<Object> {
-    private final XYAngleToken position;
+public class SEKiCadSymbolPin extends SEToken<Object> {
+    private final SEPositionToken position;
     private final SEToken<Double> length;
-    private final NamedTextToken pinName;
-    private final NamedTextToken pinNumber;
+    private final SENamedTextToken pinName;
+    private final SENamedTextToken pinNumber;
 
-    public KiCadSymbolPin(String pinName, String pinNumber) {
+    public SEKiCadSymbolPin(String pinName, String pinNumber) {
         super("pin");
 
         setProperty(0, ElectricalType.UNSPECIFIED);
         setProperty(1, GraphicStyle.LINE);
 
-        position = new XYAngleToken();
+        position = new SEPositionToken();
         getChildren().add(position);
 
         length = addChild("length", 2.54d);
 
-        this.pinName = new NamedTextToken("name", pinName);
-        this.pinNumber = new NamedTextToken("number", pinNumber);
+        this.pinName = new SENamedTextToken("name", pinName);
+        this.pinNumber = new SENamedTextToken("number", pinNumber);
     }
 
     public ElectricalType getElectricalType() {
@@ -57,7 +57,7 @@ public class KiCadSymbolPin extends SEToken<Object> {
         setProperty(1, graphicStyle);
     }
 
-    public XYAngleToken getPosition() {
+    public SEPositionToken getPosition() {
         return position;
     }
     
@@ -69,7 +69,7 @@ public class KiCadSymbolPin extends SEToken<Object> {
         this.length.setProperty(0, length);
     }
 
-    public NamedTextToken getPinName() {
+    public SENamedTextToken getPinName() {
         return pinName;
     }
 
@@ -77,7 +77,7 @@ public class KiCadSymbolPin extends SEToken<Object> {
         this.pinName.setText(pinName);
     }
 
-    public NamedTextToken getPinNumber() {
+    public SENamedTextToken getPinNumber() {
         return pinNumber;
     }
 

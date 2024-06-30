@@ -18,9 +18,9 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.parser;
 
-import com.vthmgnpipola.kibsymbolbuilder.kicad.KiCadSymbolPin;
-import com.vthmgnpipola.kibsymbolbuilder.kicad.PinBlock;
-import com.vthmgnpipola.kibsymbolbuilder.kicad.UnitData;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadSymbolPin;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.PinBlock;
+import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.UnitData;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class CSVPinLayoutParser implements PinLayoutParser {
                 String name = record.get(PIN_NAME_CSV_HEADER);
                 String number = record.get(PIN_ADDRESS_CSV_HEADER);
 
-                KiCadSymbolPin pin = new KiCadSymbolPin(name, number);
+                SEKiCadSymbolPin pin = new SEKiCadSymbolPin(name, number);
 
                 if (bankMapping.containsKey(bank)) {
                     units.get(bankMapping.get(bank)).getBlocks().getFirst().getPins().add(pin);
