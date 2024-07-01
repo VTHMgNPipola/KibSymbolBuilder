@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21.0.1" fx:controller="com.vthmgnpipola.kibsymbolbuilder.controller.KPinAssignmentsLoaderController">
+<ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vthmgnpipola.kibsymbolbuilder.controller.KPinAssignmentsLoaderController">
   <content>
     <AnchorPane>
          <children>
@@ -48,7 +48,10 @@
                      </padding>
                      <children>
                         <Label text="%symbolEditor.pinAssignmentsLoader.pinNumber" GridPane.rowIndex="1" />
-                        <Label text="%symbolEditor.pinAssignmentsLoader.pinName" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <Label text="%symbolEditor.pinAssignmentsLoader.pinName" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding></Label>
                         <Label text="%symbolEditor.pinAssignmentsLoader.pinUnit" GridPane.rowIndex="2" />
                         <Label text="%symbolEditor.pinAssignmentsLoader.pinBlock" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                         <ChoiceBox fx:id="pinNumberChoiceBox" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />

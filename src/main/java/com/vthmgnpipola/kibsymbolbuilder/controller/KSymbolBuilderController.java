@@ -33,13 +33,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -53,14 +59,21 @@ import java.util.stream.Collectors;
 public class KSymbolBuilderController {
     private static final Logger logger = LoggerFactory.getLogger(KSymbolBuilderController.class);
 
-    @FXML private ResourceBundle resources;
+    @FXML
+    private ResourceBundle resources;
 
-    @FXML private TreeView<String> librariesTreeView;
-    @FXML private KSymbolEditorPanelController editorController;
+    @FXML
+    private MenuItem newSymbolMenuItem;
+
+    @FXML
+    private TreeView<String> librariesTreeView;
+    @FXML
+    private KSymbolEditorPanelController editorController;
 
     private MapProperty<Path, SEKiCadLibrary> libraries;
     private AtomicBoolean modifyingLibrariesMap;
 
+    private Path selectedLibraryPath;
     private Path currentLibraryPath;
     private int currentSymbolIndex;
     private MKiCadSymbol kiCadSymbol;
@@ -71,6 +84,7 @@ public class KSymbolBuilderController {
 
         modifyingLibrariesMap = new AtomicBoolean(false);
 
+        selectedLibraryPath = null;
         currentLibraryPath = null;
         currentSymbolIndex = -1;
 
@@ -82,20 +96,46 @@ public class KSymbolBuilderController {
 
             updateLibrariesTreeView();
 
+            selectedLibraryPath = null;
             currentLibraryPath = null;
             currentSymbolIndex = -1;
             kiCadSymbol.loadSExpression(new SEKiCadSymbol(""));
         });
+
+        updateLibrariesTreeView();
 
         kiCadSymbol = new MKiCadSymbol();
 
         editorController.setSymbol(kiCadSymbol);
         kiCadSymbol.loadSExpression(new SEKiCadSymbol(""));
 
+        MenuItem newLibraryContextMenuItem = new MenuItem(resources.getString("symbolEditor.newLibrary"));
+        newLibraryContextMenuItem.setOnAction(event -> createNewLibrary());
+
+        MenuItem newSymbolContextMenuItem = new MenuItem(resources.getString("symbolEditor.newSymbol"));
+        newSymbolContextMenuItem.setOnAction(event -> createNewSymbol());
+        newSymbolContextMenuItem.setDisable(true);
+
+        ContextMenu treeViewContextMenu = new ContextMenu(newLibraryContextMenuItem, newSymbolContextMenuItem);
+        librariesTreeView.setContextMenu(treeViewContextMenu);
+
         librariesTreeView.setOnMouseClicked(event -> {
-            if (event.getClickCount() >= 2 && !librariesTreeView.getSelectionModel().isEmpty()) {
+            if (!librariesTreeView.getSelectionModel().isEmpty()) {
                 TreeItem<String> selectedItem = librariesTreeView.getSelectionModel().getSelectedItem();
-                if (selectedItem.getChildren().isEmpty()) {
+
+                boolean librarySelected = !(selectedItem.getParent() == null ||
+                        !selectedItem.getParent().equals(librariesTreeView.getRoot()));
+                newSymbolContextMenuItem.setDisable(!librarySelected);
+                newSymbolMenuItem.setDisable(!librarySelected);
+
+                if (librarySelected) {
+                    Optional<Map.Entry<Path, SEKiCadLibrary>> libraryOptional = libraries.entrySet().stream()
+                            .filter(e -> e.getValue().getLibraryName().equals(selectedItem.getValue()))
+                            .findAny();
+                    assert  libraryOptional.isPresent();
+
+                    selectedLibraryPath = libraryOptional.get().getKey();
+                } else if (event.getClickCount() >= 2 && selectedItem.isLeaf()) {
                     TreeItem<String> selectedLibraryTreeItem = selectedItem.getParent();
                     Optional<Map.Entry<Path, SEKiCadLibrary>> libraryOptional = libraries.entrySet().stream()
                             .filter(e -> e.getValue().getLibraryName().equals(selectedLibraryTreeItem.getValue()))
@@ -115,6 +155,7 @@ public class KSymbolBuilderController {
 
                     kiCadSymbol.loadSExpression(symbol);
                     currentLibraryPath = libraryOptional.get().getKey();
+                    selectedLibraryPath = currentLibraryPath;
                 }
             }
         });
@@ -168,6 +209,8 @@ public class KSymbolBuilderController {
     @FXML
     private void saveLibraries() {
         logger.info("Saving all libraries...");
+        applySymbolChanges();
+
         SEWriter writer = new SEWriter();
 
         boolean error = false;
@@ -189,6 +232,73 @@ public class KSymbolBuilderController {
             logger.info("Successfully saved all libraries!");
         } else {
             logger.warn("Saved libraries with errors!");
+        }
+    }
+
+    @FXML
+    private void createNewSymbol() {
+        TreeItem<String> selectedItem = librariesTreeView.getSelectionModel().getSelectedItem();
+        if (selectedItem == null || !selectedItem.getParent().equals(librariesTreeView.getRoot())) {
+            return;
+        }
+
+        TextInputDialog nameDialog = new TextInputDialog();
+        nameDialog.setContentText(resources.getString("symbolEditor.newSymbolName"));
+        Optional<String> nameOptional = nameDialog.showAndWait();
+        if (nameOptional.isEmpty()) {
+            return;
+        }
+        String name = nameOptional.get();
+
+        SEKiCadLibrary library = libraries.get(selectedLibraryPath);
+        boolean symbolExists = library.getChildren().stream()
+                .anyMatch(token -> token instanceof SEKiCadSymbol s && s.getSymbolName().equals(name));
+        if (symbolExists) {
+            new Alert(Alert.AlertType.WARNING, resources.getString("symbolEditor.symbolAlreadyExists")).show();
+            return;
+        }
+
+        SEKiCadSymbol newSymbol = new SEKiCadSymbol(name);
+        newSymbol.setValue(name);
+        library.getChildren().add(newSymbol);
+        currentSymbolIndex = library.getChildren().indexOf(newSymbol);
+        currentLibraryPath = selectedLibraryPath;
+
+        kiCadSymbol.loadSExpression(newSymbol);
+
+        updateLibrariesTreeView();
+    }
+
+    @FXML
+    private void createNewLibrary() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(resources.getString("symbolEditor.newLibraryFile"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                resources.getString("generic.kicadLibraryExtensionName"), "*.kicad_sym"));
+
+        File chosenFile = fileChooser.showSaveDialog(librariesTreeView.getScene().getWindow());
+        if (chosenFile != null) {
+            String pathString = chosenFile.getAbsolutePath();
+            if (!pathString.endsWith(".kicad_sym")) {
+                pathString += ".kicad_sym";
+            }
+
+            Path path = Path.of(pathString);
+            if (Files.exists(path) || libraries.keySet().stream().anyMatch(p -> p.equals(path))) {
+                new Alert(Alert.AlertType.WARNING, resources.getString("symbolEditor.libraryAlreadyExists")).show();
+                return;
+            }
+
+            SEKiCadLibrary newLibrary = new SEKiCadLibrary();
+
+            String libraryName = path.getFileName().toString();
+            int posExtension = libraryName.lastIndexOf('.');
+            if (posExtension >= 0 && posExtension < libraryName.length() - 1) {
+                libraryName = libraryName.substring(0, posExtension);
+            }
+            newLibrary.setLibraryName(libraryName);
+
+            libraries.put(path, newLibrary);
         }
     }
 

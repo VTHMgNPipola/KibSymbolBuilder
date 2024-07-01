@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -62,16 +63,16 @@ public class KLibraryManagerController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(resources.getString("libraryManager.openLibraryFile"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                resources.getString("libraryManager.openLibraryFile.extensionName"), "*.kicad_sym"));
+                resources.getString("generic.kicadLibraryExtensionName"), "*.kicad_sym"));
 
-        File chosenFile = fileChooser.showOpenDialog(libraryListView.getScene().getWindow());
-        if (chosenFile != null) {
-            if (libraryListView.getItems().contains(chosenFile.getAbsolutePath())) {
+        List<File> chosenFiles = fileChooser.showOpenMultipleDialog(libraryListView.getScene().getWindow());
+        if (chosenFiles != null) {
+            if (chosenFiles.stream().anyMatch(file -> libraryListView.getItems().contains(file.getAbsolutePath()))) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION,
                         resources.getString("libraryManager.libraryAlreadyExists"));
                 alert.show();
             } else {
-                libraryListView.getItems().add(chosenFile.getAbsolutePath());
+                libraryListView.getItems().addAll(chosenFiles.stream().map(File::getAbsolutePath).toList());
             }
         }
     }

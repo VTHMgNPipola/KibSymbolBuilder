@@ -18,6 +18,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="%symbolEditor.menu.file">
             <items>
+                  <MenuItem mnemonicParsing="false" onAction="#createNewLibrary" text="%symbolEditor.newLibrary" />
+                  <MenuItem fx:id="newSymbolMenuItem" disable="true" mnemonicParsing="false" onAction="#createNewSymbol" text="%symbolEditor.newSymbol" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#saveLibraries" text="%symbolEditor.menu.file.saveLibraries" />
                   <MenuItem mnemonicParsing="false" onAction="#openLibraryManager" text="%symbolEditor.menu.file.libraryManager" />
                   <SeparatorMenuItem mnemonicParsing="false" />
