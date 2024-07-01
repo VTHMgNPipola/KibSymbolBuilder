@@ -41,11 +41,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class KSymbolBuilderController {
     private static final Logger logger = LoggerFactory.getLogger(KSymbolBuilderController.class);
@@ -210,17 +212,31 @@ public class KSymbolBuilderController {
     }
 
     private void updateLibrariesTreeView() {
+        TreeItem<String> oldRoot = librariesTreeView.getRoot();
+        Map<String, Boolean> expandedStatusMap;
+        if (oldRoot != null) {
+            expandedStatusMap = librariesTreeView.getRoot().getChildren().stream()
+                    .collect(Collectors.toMap(TreeItem::getValue, TreeItem::isExpanded));
+        } else {
+            expandedStatusMap = new HashMap<>();
+        }
+
         TreeItem<String> rootItem = new TreeItem<>(resources.getString("symbolEditor.librariesTreeItem"));
         rootItem.setExpanded(true);
 
         for (SEKiCadLibrary library : libraries.values()) {
-            TreeItem<String> libraryTreeItem = new TreeItem<>(library.getLibraryName());
+            String libraryName = library.getLibraryName();
+            TreeItem<String> libraryTreeItem = new TreeItem<>(libraryName);
 
             for (SEToken<?> child : library.getChildren()) {
                 if (child instanceof SEKiCadSymbol symbol) {
                     TreeItem<String> symbolTreeItem = new TreeItem<>(symbol.getSymbolName());
                     libraryTreeItem.getChildren().add(symbolTreeItem);
                 }
+            }
+
+            if (expandedStatusMap.containsKey(libraryName)) {
+                libraryTreeItem.setExpanded(expandedStatusMap.get(libraryName));
             }
             rootItem.getChildren().add(libraryTreeItem);
         }
