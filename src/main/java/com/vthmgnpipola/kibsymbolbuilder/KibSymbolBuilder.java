@@ -18,11 +18,6 @@
 
 package com.vthmgnpipola.kibsymbolbuilder;
 
-import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadLibrary;
-import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadSymbol;
-import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SETextEffectsToken;
-import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEReader;
-import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -31,13 +26,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class KibSymbolBuilder extends Application {
     public static void main(String[] args) throws IOException {
         // Example S-Expression
+        /*
         SEKiCadLibrary library = new SEKiCadLibrary();
         SEKiCadSymbol symbol = new SEKiCadSymbol("74HC04");
         symbol.setValue("74HC04");
@@ -63,6 +58,7 @@ public class KibSymbolBuilder extends Application {
         readLibrary.read(reader.read(Paths.get("./exemplo.txt")));
         readLibrary.write(writer);
         writer.finish(Paths.get("./exemplo2.kicad_sym"));
+        */
 
         // End example
 

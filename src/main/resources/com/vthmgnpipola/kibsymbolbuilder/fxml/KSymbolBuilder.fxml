@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
@@ -15,8 +18,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="%symbolEditor.menu.file">
             <items>
-                  <MenuItem mnemonicParsing="false" text="%symbolEditor.menu.file.save" />
-                  <MenuItem mnemonicParsing="false" onAction="#openLibraryManager" text="%symbolEditor.menu.file.libraries" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveLibraries" text="%symbolEditor.menu.file.saveLibraries" />
+                  <MenuItem mnemonicParsing="false" onAction="#openLibraryManager" text="%symbolEditor.menu.file.libraryManager" />
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" text="%symbolEditor.menu.file.close" />
             </items>
@@ -28,7 +31,20 @@
             <TreeView fx:id="librariesTreeView" />
           <AnchorPane minHeight="0.0" minWidth="0.0">
                <children>
-                  <fx:include fx:id="editor" source="KSymbolEditorPanel.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <ToolBar prefHeight="40.0" prefWidth="200.0">
+                          <items>
+                            <Button mnemonicParsing="false" onAction="#applySymbolChanges" text="%generic.apply" />
+                              <Button mnemonicParsing="false" onAction="#cancelSymbolChanges" text="%generic.cancel" />
+                          </items>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </ToolBar>
+                        <fx:include fx:id="editor" source="KSymbolEditorPanel.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
                </children>
             </AnchorPane>
         </items>
