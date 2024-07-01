@@ -20,9 +20,23 @@ package com.vthmgnpipola.kibsymbolbuilder.parser;
 
 import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.UnitData;
 
-import java.nio.file.Path;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public interface PinLayoutParser {
-    List<UnitData> parse(Path path);
+    boolean load(String data);
+
+    void setLoadColumnHeaders(boolean loadColumnHeaders);
+
+    List<String> getHeaders(ResourceBundle resources);
+
+    void setPinNumberHeader(String header);
+
+    void setPinNameHeader(String header);
+
+    void setPinUnitHeader(String header);
+
+    void setPinBlockHeader(String header);
+
+    List<UnitData> getPins();
 }

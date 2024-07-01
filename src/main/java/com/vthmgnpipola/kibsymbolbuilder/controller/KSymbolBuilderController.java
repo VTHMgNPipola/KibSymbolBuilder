@@ -112,13 +112,32 @@ public class KSymbolBuilderController {
     }
 
     @FXML
-    private void openLibraryManager() {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setResources(resources);
-
-        loader.setLocation(Objects.requireNonNull(getClass().getClassLoader()
-                .getResource("com/vthmgnpipola/kibsymbolbuilder/fxml/KLibraryManager.fxml")));
+    private void loadPinAssignments() {
         try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setResources(resources);
+            loader.setLocation(Objects.requireNonNull(getClass().getClassLoader()
+                    .getResource("com/vthmgnpipola/kibsymbolbuilder/fxml/KPinAssignmentsLoader.fxml")));
+            Parent pinAssignmentsLoaderRoot = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle(resources.getString("symbolEditor.pinAssignmentsLoader.title"));
+            stage.setScene(new Scene(pinAssignmentsLoaderRoot));
+            stage.show();
+        } catch (IOException e) {
+            logger.error("Unable to load pin assignments loader window!", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR, resources.getString("generic.ioException"));
+            alert.show();
+        }
+    }
+
+    @FXML
+    private void openLibraryManager() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setResources(resources);
+            loader.setLocation(Objects.requireNonNull(getClass().getClassLoader()
+                    .getResource("com/vthmgnpipola/kibsymbolbuilder/fxml/KLibraryManager.fxml")));
             Parent libraryManagerRoot = loader.load();
             ((KLibraryManagerController) loader.getController()).setLibraries(libraries);
 

@@ -37,6 +37,7 @@
                           <items>
                             <Button mnemonicParsing="false" onAction="#applySymbolChanges" text="%generic.apply" />
                               <Button mnemonicParsing="false" onAction="#cancelSymbolChanges" text="%generic.cancel" />
+                              <Button mnemonicParsing="false" onAction="#loadPinAssignments" text="%symbolEditor.pinManager.loadAssignments" />
                           </items>
                            <VBox.margin>
                               <Insets />

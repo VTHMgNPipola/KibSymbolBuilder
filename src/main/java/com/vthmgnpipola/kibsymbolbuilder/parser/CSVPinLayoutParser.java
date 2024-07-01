@@ -18,32 +18,36 @@
 
 package com.vthmgnpipola.kibsymbolbuilder.parser;
 
-import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadSymbolPin;
-import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.PinBlock;
 import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.UnitData;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ResourceBundle;
 
 public class CSVPinLayoutParser implements PinLayoutParser {
     private static final Logger logger = LoggerFactory.getLogger(CSVPinLayoutParser.class);
 
-    public static final String BANK_CSV_HEADER = "Bank";
-    public static final String PIN_NAME_CSV_HEADER = "Pin Name";
-    public static final String PIN_ADDRESS_CSV_HEADER = "Pin Address";
+    private String data;
+    private String pinNumberHeader;
+    private String pinNameHeader;
+    private String pinUnitHeader;
+    private String pinBlockHeader;
+    private boolean loadHeaders;
 
-    @Override
+    private final List<CSVRecord> records;
+
+    public CSVPinLayoutParser() {
+        data = null;
+        records = new ArrayList<>();
+    }
+
+    /*@Override
     public List<UnitData> parse(Path path) {
         logger.info("Trying to parse '{}' as a CSV file", path.getFileName());
 
@@ -52,11 +56,7 @@ public class CSVPinLayoutParser implements PinLayoutParser {
             Map<String, Integer> bankMapping = new HashMap<>();
             AtomicInteger bankIndexCounter = new AtomicInteger(0);
 
-            Iterable<CSVRecord> records = CSVFormat.RFC4180.builder()
-                    .setHeader()
-                    .setSkipHeaderRecord(false)
-                    .build()
-                    .parse(reader);
+            Iterable<CSVRecord> records =
 
             for (CSVRecord record : records) {
                 String bank = record.get(BANK_CSV_HEADER);
@@ -85,5 +85,87 @@ public class CSVPinLayoutParser implements PinLayoutParser {
             logger.error("Unable to parte file as a CSV file!", e);
             return null;
         }
+    }*/
+
+    private boolean updateRecords() {
+        records.clear();
+        try {
+            CSVFormat.Builder builder = CSVFormat.RFC4180.builder();
+            if (loadHeaders) {
+                builder.setHeader();
+            }
+            Iterable<CSVRecord> recordsIterable = builder
+                    .build()
+                    .parse(new StringReader(data));
+
+            for (CSVRecord record : recordsIterable) {
+                records.add(record);
+            }
+
+            logger.info("Parsed CSV file successfully.");
+            return true;
+        } catch (Throwable e) {
+            logger.debug("Unable to parse CSV file.");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean load(String data) {
+        this.data = data;
+        return updateRecords();
+    }
+
+    @Override
+    public void setLoadColumnHeaders(boolean loadColumnHeaders) {
+        loadHeaders = loadColumnHeaders;
+        if (data != null) {
+            updateRecords();
+        }
+    }
+
+    @Override
+    public List<String> getHeaders(ResourceBundle resources) {
+        if (records.isEmpty()) {
+            return null;
+        }
+
+        List<String> headers = new ArrayList<>();
+        Map<String, String> recordMap = records.getFirst().toMap();
+        if (recordMap.isEmpty()) {
+            String format = resources.getString("symbolEditor.pinAssignmentsLoader.columnNumber");
+            for (int i = 0; i < records.getFirst().size(); i++) {
+                headers.add(String.format(format, i + 1));
+            }
+        } else {
+            headers.addAll(recordMap.keySet());
+        }
+
+        return headers;
+    }
+
+    @Override
+    public void setPinNumberHeader(String header) {
+        pinNumberHeader = header;
+    }
+
+    @Override
+    public void setPinNameHeader(String header) {
+        pinNameHeader = header;
+    }
+
+    @Override
+    public void setPinUnitHeader(String header) {
+        pinUnitHeader = header;
+    }
+
+    @Override
+    public void setPinBlockHeader(String header) {
+        pinBlockHeader = header;
+    }
+
+    @Override
+    public List<UnitData> getPins() {
+        return List.of();
     }
 }
