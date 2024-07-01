@@ -35,6 +35,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -47,6 +49,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,15 +119,81 @@ public class KSymbolBuilderController {
         newSymbolContextMenuItem.setOnAction(event -> createNewSymbol());
         newSymbolContextMenuItem.setDisable(true);
 
-        ContextMenu treeViewContextMenu = new ContextMenu(newLibraryContextMenuItem, newSymbolContextMenuItem);
+        SeparatorMenuItem separator = new SeparatorMenuItem();
+
+        MenuItem removeSymbolsMenuItem = new MenuItem(resources.getString("symbolEditor.removeSymbols"));
+        removeSymbolsMenuItem.setOnAction(event -> {
+            List<TreeItem<String>> selectedItems = librariesTreeView.getSelectionModel().getSelectedItems();
+            if (selectedItems.isEmpty()) {
+                return;
+            }
+
+            // Verify that all selected items are symbols, while mapping all libraries that correspond to the selected
+            // symbols. The mapping is used to reduce the number of lookups that need to be done to remove each symbol.
+            Map<String, List<String>> removedSymbols = new HashMap<>();
+            for (TreeItem<String> item : selectedItems) {
+                if (!item.isLeaf()) {
+                    return;
+                }
+
+                String libraryName = item.getParent().getValue();
+                if (removedSymbols.containsKey(libraryName)) {
+                    removedSymbols.get(libraryName).add(item.getValue());
+                } else {
+                    List<String> list = new ArrayList<>();
+                    list.add(item.getValue());
+                    removedSymbols.put(libraryName, list);
+                }
+            }
+
+            for (Map.Entry<String, List<String>> entry : removedSymbols.entrySet()) {
+                Optional<Map.Entry<Path, SEKiCadLibrary>> libraryOptional = libraries.entrySet().stream()
+                        .filter(e -> e.getValue().getLibraryName().equals(entry.getKey()))
+                        .findAny();
+                assert libraryOptional.isPresent();
+                SEKiCadLibrary library = libraryOptional.get().getValue();
+
+                logger.info("Removing symbols from library '{}'...", library.getLibraryName());
+
+                for (String symbol : entry.getValue()) {
+                    logger.info("Removing symbol '{}'...", symbol);
+                    library.getChildren()
+                            .removeIf(token -> token instanceof SEKiCadSymbol s && s.getSymbolName().equals(symbol));
+                }
+            }
+
+            kiCadSymbol.loadSExpression(new SEKiCadSymbol(""));
+            currentSymbolIndex = -1;
+
+            updateLibrariesTreeView();
+        });
+        removeSymbolsMenuItem.setDisable(true);
+
+        ContextMenu treeViewContextMenu = new ContextMenu(newLibraryContextMenuItem, newSymbolContextMenuItem,
+                separator, removeSymbolsMenuItem);
         librariesTreeView.setContextMenu(treeViewContextMenu);
 
+        librariesTreeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         librariesTreeView.setOnMouseClicked(event -> {
             if (!librariesTreeView.getSelectionModel().isEmpty()) {
                 TreeItem<String> selectedItem = librariesTreeView.getSelectionModel().getSelectedItem();
 
-                boolean librarySelected = !(selectedItem.getParent() == null ||
-                        !selectedItem.getParent().equals(librariesTreeView.getRoot()));
+                if (librariesTreeView.getRoot() == null || selectedItem.getParent() == null) {
+                    removeSymbolsMenuItem.setDisable(true);
+                    return;
+                }
+
+                boolean allSymbols = true;
+                for (TreeItem<String> item : librariesTreeView.getSelectionModel().getSelectedItems()) {
+                    if (!item.isLeaf()) {
+                        allSymbols = false;
+                        break;
+                    }
+                }
+                removeSymbolsMenuItem.setDisable(!allSymbols);
+
+                boolean librarySelected = !(selectedItem.isLeaf() ||
+                        !librariesTreeView.getRoot().equals(selectedItem.getParent()));
                 newSymbolContextMenuItem.setDisable(!librarySelected);
                 newSymbolMenuItem.setDisable(!librarySelected);
 
@@ -132,7 +201,7 @@ public class KSymbolBuilderController {
                     Optional<Map.Entry<Path, SEKiCadLibrary>> libraryOptional = libraries.entrySet().stream()
                             .filter(e -> e.getValue().getLibraryName().equals(selectedItem.getValue()))
                             .findAny();
-                    assert  libraryOptional.isPresent();
+                    assert libraryOptional.isPresent();
 
                     selectedLibraryPath = libraryOptional.get().getKey();
                 } else if (event.getClickCount() >= 2 && selectedItem.isLeaf()) {
