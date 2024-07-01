@@ -21,7 +21,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#saveLibraries" text="%symbolEditor.menu.file.saveLibraries" />
                   <MenuItem mnemonicParsing="false" onAction="#openLibraryManager" text="%symbolEditor.menu.file.libraryManager" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" text="%symbolEditor.menu.file.close" />
+              <MenuItem mnemonicParsing="false" onAction="#exit" text="%symbolEditor.menu.file.close" />
             </items>
           </Menu>
         </menus>

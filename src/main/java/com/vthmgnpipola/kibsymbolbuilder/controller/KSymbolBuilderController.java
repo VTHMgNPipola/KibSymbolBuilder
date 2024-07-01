@@ -23,6 +23,7 @@ import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadLibrary;
 import com.vthmgnpipola.kibsymbolbuilder.kicad.sexpr.SEKiCadSymbol;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEToken;
 import com.vthmgnpipola.kibsymbolbuilder.sexpr.SEWriter;
+import javafx.application.Platform;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
@@ -200,6 +201,12 @@ public class KSymbolBuilderController {
 
         kiCadSymbol.loadSExpression((SEKiCadSymbol) libraries.get(currentLibraryPath)
                 .getChildren().get(currentSymbolIndex));
+    }
+
+    @FXML
+    private void exit() {
+        logger.info("User requested exiting the application.");
+        Platform.exit();
     }
 
     private void updateLibrariesTreeView() {
