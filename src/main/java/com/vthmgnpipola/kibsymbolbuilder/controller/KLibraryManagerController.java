@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KLibraryManagerController {
     private static final Logger logger = LoggerFactory.getLogger(KLibraryManagerController.class);
@@ -47,6 +48,7 @@ public class KLibraryManagerController {
     @FXML private ListView<String> libraryListView;
 
     private Map<Path, SEKiCadLibrary> libraries;
+    private AtomicBoolean modifyingMap;
 
     @FXML
     private void initialize() {
@@ -132,8 +134,14 @@ public class KLibraryManagerController {
         }
 
         if (!error) {
-            libraries.clear();
-            libraries.putAll(intermediaryMap);
+            if (intermediaryMap.isEmpty()) {
+                libraries.clear();
+            } else {
+                modifyingMap.set(true);
+                libraries.clear();
+                modifyingMap.set(false);
+                libraries.putAll(intermediaryMap);
+            }
 
             ((Stage) ((Node) e.getSource()).getScene().getWindow()).close();
         }
@@ -146,5 +154,9 @@ public class KLibraryManagerController {
         for (Path path : libraries.keySet()) {
             libraryListView.getItems().add(path.toAbsolutePath().toString());
         }
+    }
+
+    public void setModifyingMapFlagRef(AtomicBoolean modifyingMap) {
+        this.modifyingMap = modifyingMap;
     }
 }

@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class KSymbolBuilderController {
@@ -58,6 +59,7 @@ public class KSymbolBuilderController {
     @FXML private KSymbolEditorPanelController editorController;
 
     private MapProperty<Path, SEKiCadLibrary> libraries;
+    private AtomicBoolean modifyingLibrariesMap;
 
     private Path currentLibraryPath;
     private int currentSymbolIndex;
@@ -67,11 +69,17 @@ public class KSymbolBuilderController {
     private void initialize() {
         logger.info("Initializing KSymbolBuilderController...");
 
+        modifyingLibrariesMap = new AtomicBoolean(false);
+
         currentLibraryPath = null;
         currentSymbolIndex = -1;
 
         libraries = new SimpleMapProperty<>(FXCollections.observableHashMap());
         libraries.addListener((MapChangeListener<? super Path, ? super SEKiCadLibrary>) c -> {
+            if (modifyingLibrariesMap.get()) {
+                return;
+            }
+
             updateLibrariesTreeView();
 
             currentLibraryPath = null;
@@ -142,7 +150,9 @@ public class KSymbolBuilderController {
             loader.setLocation(Objects.requireNonNull(getClass().getClassLoader()
                     .getResource("com/vthmgnpipola/kibsymbolbuilder/fxml/KLibraryManager.fxml")));
             Parent libraryManagerRoot = loader.load();
-            ((KLibraryManagerController) loader.getController()).setLibraries(libraries);
+            KLibraryManagerController controller = loader.getController();
+            controller.setLibraries(libraries);
+            controller.setModifyingMapFlagRef(modifyingLibrariesMap);
 
             Stage stage = new Stage();
             stage.setTitle(resources.getString("libraryManager.title"));
