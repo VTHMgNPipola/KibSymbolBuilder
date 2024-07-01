@@ -9,6 +9,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -21,7 +22,10 @@
                   <MenuItem mnemonicParsing="false" onAction="#createNewLibrary" text="%symbolEditor.newLibrary" />
                   <MenuItem fx:id="newSymbolMenuItem" disable="true" mnemonicParsing="false" onAction="#createNewSymbol" text="%symbolEditor.newSymbol" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#saveLibraries" text="%symbolEditor.menu.file.saveLibraries" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveLibraries" text="%symbolEditor.menu.file.saveLibraries">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                   <MenuItem mnemonicParsing="false" onAction="#openLibraryManager" text="%symbolEditor.menu.file.libraryManager" />
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" onAction="#exit" text="%symbolEditor.menu.file.close" />
